@@ -56,7 +56,7 @@ export default class App extends React.Component {
               style={styles.cameraView}
               type={Camera.Constants.Type.back}
               ref={this.cameraRef}>
-            <Button title="Take photo" onPress={this.handleTakePhoto} />
+            <Button title="Press to take photo" onPress={this.handleTakePhoto} />
           </Camera>
         </View>
     );
