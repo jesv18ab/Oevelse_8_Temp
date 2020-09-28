@@ -15,15 +15,60 @@ import * as MediaLibrary from 'expo-media-library';
 
 
 export default class App extends React.Component {
-  render() {
+  cameraRef = React.createRef();
+
+  state = {
+    hasCameraPermission: null,
+  };
+
+  componentDidMount() {
+    this.updateCameraPermission();
+  }
+
+  updateCameraPermission = async () => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    this.setState({ hasCameraPermission: status === 'granted' });
+  };
+
+  handleTakePhoto = async () => {
+    if (!this.cameraRef.current) {
+      return;
+    }
+    const result = await this.cameraRef.current.takePictureAsync();
+    console.log({ result });
+  };
+
+  renderCameraView() {
+    const { hasCameraPermission, type } = this.state;
+    if (hasCameraPermission === null) {
+      return <View />;
+    }
+    if (hasCameraPermission === false) {
+      return (
+          <View>
+            <Text>No access to camera.</Text>
+          </View>
+      );
+    }
     return (
-        <View style={styles.container}>
-          <Text>Open up App.js to start working on your app!</Text>
-          <StatusBar style="auto" />
+        <View>
+          <Camera
+              style={styles.cameraView}
+              type={Camera.Constants.Type.back}
+              ref={this.cameraRef}>
+            <Button title="Take photo" onPress={this.handleTakePhoto} />
+          </Camera>
         </View>
     );
   }
 
+  render() {
+    return (
+        <SafeAreaView style={styles.container}>
+          <View style={styles.cameraContainer}>{this.renderCameraView()}</View>
+        </SafeAreaView>
+    );
+  }
 
 }
 
